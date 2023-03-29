@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\bogus\\Takeoff\\API\\API.csproj": {}
+    "c:\\Users\\bogus\\Takeoff\\API\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\bogus\\Takeoff\\API\\API.csproj": {
+    "c:\\Users\\bogus\\Takeoff\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\bogus\\Takeoff\\API\\API.csproj",
+        "projectUniqueName": "c:\\Users\\bogus\\Takeoff\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\bogus\\Takeoff\\API\\API.csproj",
+        "projectPath": "c:\\Users\\bogus\\Takeoff\\API\\API.csproj",
         "packagesPath": "C:\\Users\\bogus\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\bogus\\Takeoff\\API\\obj\\",
+        "outputPath": "c:\\Users\\bogus\\Takeoff\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\bogus\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -39,6 +39,16 @@
           "targetAlias": "net7.0",
           "dependencies": {
             "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
               "version": "[7.0.4, )"
             },

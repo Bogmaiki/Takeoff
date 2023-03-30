@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\bogus\\Takeoff\\API\\API.csproj": {}
+    "C:\\Users\\bogus\\Takeoff\\API\\API.csproj": {}
   },
   "projects": {
-    "c:\\Users\\bogus\\Takeoff\\API\\API.csproj": {
+    "C:\\Users\\bogus\\Takeoff\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\bogus\\Takeoff\\API\\API.csproj",
+        "projectUniqueName": "C:\\Users\\bogus\\Takeoff\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "c:\\Users\\bogus\\Takeoff\\API\\API.csproj",
+        "projectPath": "C:\\Users\\bogus\\Takeoff\\API\\API.csproj",
         "packagesPath": "C:\\Users\\bogus\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\bogus\\Takeoff\\API\\obj\\",
+        "outputPath": "C:\\Users\\bogus\\Takeoff\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\bogus\\AppData\\Roaming\\NuGet\\NuGet.Config"

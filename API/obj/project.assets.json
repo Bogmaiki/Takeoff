@@ -1719,19 +1719,21 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\bogus\\Takeoff\\API\\API.csproj",
+      "projectUniqueName": "C:\\Users\\bogus\\Documents\\GitHub\\Takeoff\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "c:\\Users\\bogus\\Takeoff\\API\\API.csproj",
+      "projectPath": "C:\\Users\\bogus\\Documents\\GitHub\\Takeoff\\API\\API.csproj",
       "packagesPath": "C:\\Users\\bogus\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\bogus\\Takeoff\\API\\obj\\",
+      "outputPath": "C:\\Users\\bogus\\Documents\\GitHub\\Takeoff\\API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\bogus\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\bogus\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1788,7 +1790,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }

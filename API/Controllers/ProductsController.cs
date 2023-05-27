@@ -17,13 +17,13 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Include(p => p.Sizes).ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+             var product = await _context.Products.Include(p => p.Sizes).FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null) return NotFound();
 

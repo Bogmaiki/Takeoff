@@ -9,7 +9,16 @@ export interface CartItem {
   name: string;
   price: number;
   pictureUrl: string;
-  brand: string;
-  type: string;
   quantity: number;
+  sizes: Size[];
+  collection: string;
+  quantityInStock: number;
+  releaseDate: string; 
+  condition: string;
+  style: string;
+}
+
+export interface Size {
+  id: number;
+  value: number;
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using API.Data;
 using API.DTOs;
 using API.Entities;
@@ -40,7 +42,7 @@ namespace API.Controllers
         public async Task<ActionResult> RemoveCartItem(int productId, int quantity)
         {
             var cart = await RetrieveCart();
-            if (cart == null) return NotFound();
+            if (cart == null) return BadRequest(new ProblemDetails { Title = "Product Not Found" });
             cart.RemoveItem(productId, quantity);
             var result = await _context.SaveChangesAsync() > 0;
             if (result) return Ok();
@@ -71,17 +73,18 @@ namespace API.Controllers
             {
                 Id = cart.Id,
                 BuyerId = cart.BuyerId,
-                Items = cart.Items.Select(item => new CartItemDto
+                Items = cart.Items?.Select(item => new CartItemDto
                 {
                     ProductId = item.ProductId,
-                    Name = item.Product.Name,
-                    Price = item.Product.Price,
-                    PictureUrl = item.Product.PictureUrl,
-                    Type = item.Product.Type,
-                    Brand = item.Product.Brand,
+                    Name = item.Product?.Name,
+                    Price = item.Product?.Price ?? 0,
+                    PictureUrl = item.Product?.PictureUrl,
+                    Sizes = item.Product?.Sizes?.Select(size => size.Value).ToList() ?? new List<float>(),
+                    Collection = item.Product?.Collection,
                     Quantity = item.Quantity
-                }).ToList()
+                }).ToList() ?? new List<CartItemDto>()
             };
         }
+
     }
 }

@@ -1,57 +1,60 @@
-import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from "@mui/material";
+import { Divider, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Product } from "../../app/models/products";
-import agent from "../../app/api/agent";
 import NotFound from "../../app/errors/NotFound";
 import LoadingComponent from "../../app/layout/LoadingComponent";
-import { useStoreContext } from "../../app/context/StoreContext";
 import { LoadingButton } from "@material-ui/lab";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { addCartItemAsync, removeCartItemAsync } from "../Cart/cartSlice";
+import { fetchProductAsync, productSelectors } from "./catalogSlice";
 
 export default function ProductDetails() {
-  const { cart, setCart, removeItem } = useStoreContext();
+  const { cart, status } = useAppSelector(state => state.cart);
+  const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const product = useAppSelector(state => productSelectors.selectById(state, id!));
+  const { status: productStatus } = useAppSelector(state => state.catalog);
   const [quantity, setQuantity] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
   const item = cart?.items.find(i => i.productId === product?.id);
+  const [size, setSize] = useState<string | null>(null);
+  
 
+  const handleSizeSelection = (
+    event: React.MouseEvent<HTMLElement>,
+    newSize: string | null,
+  ) => {
+    if (newSize !== null) {
+      setSize(newSize);
+    }
+  };
 
   useEffect(() => {
     if (item) setQuantity(item.quantity);
-    id && agent.Catalog.details(parseInt(id))
-      .then(response => setProduct(response))
-      .catch(error => console.log(error))
-      .finally(() => setLoading(false));
-  }, [id, item]);
+    if (!product && id) dispatch(fetchProductAsync(parseInt(id)));
+  }, [id, item, dispatch, product]);
 
-  function handleInputChange(event: any) {
-    if (event.target.value >= 0) {
-      setQuantity(parseInt(event.target.value));
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const newQuantity = parseInt(event.target.value);
+    if (newQuantity >= 0) {
+      setQuantity(newQuantity);
     }
   }
 
   function handleUpdateCart() {
-    setSubmitting(true);
     if (!item || quantity > item.quantity) {
-      const updatedQuantity = item ? quantity - item.quantity : quantity;
-      agent.Cart.addItem(product?.id!, updatedQuantity)
-        .then(cart => setCart(cart))
-        .catch(error => console.log(error))
-        .finally(() => setSubmitting(false))
+      const updatedQuantity = item ? quantity - item.quantity : Number(quantity);
+      dispatch(addCartItemAsync({ productId: product?.id!, quantity: updatedQuantity, size: size !== null ? Number(size) : undefined }))
     } else {
       const updatedQuantity = item.quantity - quantity;
-      agent.Cart.removeItem(product?.id!, updatedQuantity)
-        .then(() => removeItem(product?.id!, updatedQuantity))
-        .catch(error => console.log(error))
-        .finally(() => setSubmitting(false));
+      dispatch(removeCartItemAsync({ productId: product?.id!, quantity: updatedQuantity, size: product?.sizes[0]?.id }))
     }
   }
 
-  if (loading) return <LoadingComponent message="Loading product..." />;
+  if (productStatus.includes('pending')) return <LoadingComponent message="Loading product..." />;
 
   if (!product) return <NotFound />;
+
+  const isAddToCartDisabled = size === null || size === '';
 
   return (
     <Grid container spacing={6}>
@@ -66,24 +69,40 @@ export default function ProductDetails() {
           <Table>
             <TableBody>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>{product.name}</TableCell>
+                <TableCell>Condition</TableCell>
+                <TableCell>{product.condition}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Style</TableCell>
+                <TableCell>{product.style}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Release Date</TableCell>
+                <TableCell>{new Date(product.releaseDate).toLocaleDateString('en-GB')}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Description</TableCell>
                 <TableCell>{product.description}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Type</TableCell>
-                <TableCell>{product.type}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Brand</TableCell>
-                <TableCell>{product.brand}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Quantity in stock</TableCell>
-                <TableCell>{product.quantityInStock}</TableCell>
+                <TableCell>Sizes</TableCell>
+                <TableCell>
+                  <Stack direction="row" spacing={4}>
+                    <ToggleButtonGroup
+                      value={size}
+                      exclusive
+                      onChange={handleSizeSelection}
+                      aria-label="size selection"
+                    >
+                      {product.sizes &&
+                        product.sizes.map((size) => (
+                          <ToggleButton key={size.id} value={size.id}>
+                            {size.value}
+                          </ToggleButton>
+                        ))}
+                    </ToggleButtonGroup>
+                  </Stack>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -92,22 +111,22 @@ export default function ProductDetails() {
           <Grid item xs={6}>
             <TextField
               onChange={handleInputChange}
-              variant='outlined'
-              type='number'
-              label='Quantity in Cart'
+              variant="outlined"
+              type="number"
+              label="Quantity in Cart"
               fullWidth
               value={quantity}
             />
           </Grid>
           <Grid item xs={6}>
             <LoadingButton
-              disabled={item?.quantity === quantity || !item && quantity === 0}
-              loading={submitting}
+              disabled={isAddToCartDisabled || (item?.quantity === quantity)}
+              loading={status.includes('pending')}
               onClick={handleUpdateCart}
               sx={{ height: '55px' }}
-              color='primary'
-              size='large'
-              variant='contained'
+              color="primary"
+              size="large"
+              variant="contained"
               fullWidth
             >
               {item ? 'Update Quantity' : 'Add to Cart'}

@@ -1,18 +1,6 @@
-using System.Text.Json.Serialization;
-
-namespace API.Entities
+namespace API.DTOs
 {
-    public class Size
-    {
-        public int Id { get; set; }
-        public string Value { get; set; }
-        public int ProductId { get; set; }
-        
-        [JsonIgnore]
-        public Product Product { get; set; }
-    }
-
-    public class Product
+    public class ProductDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -24,8 +12,6 @@ namespace API.Entities
         public DateTime ReleaseDate { get; set; }
         public string Condition { get; set; }
         public string Style { get; set; }
-
-        [JsonIgnore]
-        public ICollection<Size> Sizes { get; set; }
+        public ICollection<string> Sizes { get; set; }
     }
 }

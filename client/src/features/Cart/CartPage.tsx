@@ -56,6 +56,7 @@ export default function CartPage() {
                           productId: item.productId,
                           quantity: 1,
                           name: "rem",
+                          size: { value: size },
                         })
                       )
                     }
@@ -86,6 +87,7 @@ export default function CartPage() {
                           productId: item.productId,
                           quantity: item.quantity,
                           name: "del",
+                          size: {value: item.sizes},
                         })
                       )
                     }

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using API.Data;
 using API.DTOs;
 using API.Entities;
@@ -11,6 +9,7 @@ namespace API.Controllers
     public class CartController : BaseApiController
     {
         private readonly StoreContext _context;
+
         public CartController(StoreContext context)
         {
             _context = context;
@@ -85,6 +84,5 @@ namespace API.Controllers
                 }).ToList() ?? new List<CartItemDto>()
             };
         }
-
     }
 }

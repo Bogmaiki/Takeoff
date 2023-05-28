@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace API.data.Migrations
+namespace API.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230527154234_InitialCreate")]
+    [Migration("20230528125216_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -102,11 +102,11 @@ namespace API.data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float>("Value")
-                        .HasColumnType("REAL");
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -136,9 +136,13 @@ namespace API.data.Migrations
 
             modelBuilder.Entity("API.Entities.Size", b =>
                 {
-                    b.HasOne("API.Entities.Product", null)
+                    b.HasOne("API.Entities.Product", "Product")
                         .WithMany("Sizes")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("API.Entities.Cart", b =>

@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using API.Data;
 using API.Entities;
+using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +19,16 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts()
+        public async Task<ActionResult<List<Product>>> GetProducts(string orderBy, 
+        string searchTerm, string Collections, string Sizes)
         {
-            return await _context.Products.Include(p => p.Sizes).ToListAsync();
+            var query = _context.Products.Include(p => p.Sizes)
+                .Sort(orderBy)
+                .Search(searchTerm)
+                .Filter(Collections, Sizes)
+                .AsQueryable();
+
+            return await query.ToListAsync();
         }
 
         [HttpGet("{id}")]

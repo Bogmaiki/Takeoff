@@ -5,7 +5,6 @@ import { useAppSelector } from "../../app/store/configureStore";
 export default function CartSummary() {
     const {cart} = useAppSelector(state => state.cart);
     const subtotal = cart?.items.reduce((sum, item) => sum + (item.quantity * item.price), 0) ?? 0;
-    const deliveryFee = 0;
 
     return (
         <>

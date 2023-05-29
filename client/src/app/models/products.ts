@@ -12,4 +12,11 @@ export interface Product {
     style: string;
   }
   
-  
+export interface ProductParams {
+  orderBy: string;
+  searchTerm?: string;
+  collections?: string[];
+  sizes?: string[];
+  pageNumber: number;
+  pageSize: number;
+}

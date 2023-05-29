@@ -46,5 +46,14 @@ namespace API.Controllers
 
             return product;
         }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            var Collections = await _context.Products.Select(p => p.Collection).Distinct().ToListAsync();
+            var Sizes = await _context.Products.Select(p => p.Size).Distinct().ToListAsync();
+
+            return Ok(new {Collections, Sizes});
+        }
     }
 }

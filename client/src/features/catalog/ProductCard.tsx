@@ -32,7 +32,7 @@ export default function ProductCard({ product }: Props) {
             {currencyFormat(product.price)}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {product.collection}
+            {product.collection} / {product.size}
           </Typography>
         </CardContent>
       </CardActionArea>

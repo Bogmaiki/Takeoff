@@ -4,7 +4,7 @@ export interface Product {
     description: string;
     price: number;
     pictureUrl: string;
-    sizes: Size[];
+    size: string;
     collection: string;
     quantityInStock: number;
     releaseDate: string; 
@@ -12,8 +12,4 @@ export interface Product {
     style: string;
   }
   
-  export interface Size {
-    id: number;
-    value: number;
-  }
   

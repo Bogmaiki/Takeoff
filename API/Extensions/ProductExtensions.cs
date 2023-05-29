@@ -30,7 +30,7 @@ namespace API.Extensions
             return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm));
         }
 
-        public static IQueryable<Product> Filter(this IQueryable<Product> query, string collection, string sizes)
+        public static IQueryable<Product> Filter(this IQueryable<Product> query, string collection, string size)
         {
             var collectionList = new List<string>();
             var sizeList = new List<string>();
@@ -38,18 +38,13 @@ namespace API.Extensions
             if (!string.IsNullOrEmpty(collection))
                 collectionList.AddRange(collection.ToLower().Split(",").ToList());
 
-            if (!string.IsNullOrEmpty(sizes))
+            if (!string.IsNullOrEmpty(size))
             {
-                var sizeStrings = sizes.ToLower().Split(",").ToList();
-                foreach (var sizeString in sizeStrings)
-                {
-                    if (float.TryParse(sizeString, out float size))
-                        sizeList.Add(size.ToString());
-                }
+                sizeList.AddRange(size.ToLower().Split(",").ToList());
             }
 
             query = query.Where(p => !collectionList.Any() || collectionList.Contains(p.Collection.ToLower()));
-            query = query.Where(p => !sizeList.Any() || p.Sizes.Any(s => sizeList.Contains(s.Value)));
+            query = query.Where(p => !sizeList.Any() || sizeList.Contains(p.Size.ToLower()));
 
             return query;
         }

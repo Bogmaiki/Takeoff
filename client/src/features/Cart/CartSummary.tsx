@@ -17,12 +17,7 @@ export default function CartSummary() {
                             <TableCell align="right">{currencyFormat(subtotal)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell colSpan={2}>Delivery fee*</TableCell>
-                            <TableCell align="right">{currencyFormat(deliveryFee)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell colSpan={2}>Total</TableCell>
-                            <TableCell align="right">{currencyFormat(subtotal + deliveryFee)}</TableCell>
+                            <TableCell colSpan={2}>Tax included. Shipping calculated at checkout.</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

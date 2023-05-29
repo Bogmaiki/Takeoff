@@ -78,7 +78,7 @@ namespace API.Controllers
                     Name = item.Product?.Name,
                     Price = item.Product?.Price ?? 0,
                     PictureUrl = item.Product?.PictureUrl,
-                    Sizes = item.Product?.Sizes?.Select(size => size.Value.ToString()).ToList() ?? new List<string>(),
+                    Size = item.Product?.Size,
                     Collection = item.Product?.Collection,
                     Quantity = item.Quantity
                 }).ToList() ?? new List<CartItemDto>()

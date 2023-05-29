@@ -5,6 +5,7 @@ import CartSummary from "./CartSummary";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addCartItemAsync, removeCartItemAsync } from "./cartSlice";
+import { currencyFormat } from "../../app/util/util";
 
 export default function CartPage() {
   const { cart, status } = useAppSelector(state => state.cart);
@@ -19,10 +20,10 @@ export default function CartPage() {
           <TableHead>
             <TableRow>
               <TableCell>Product</TableCell>
-              <TableCell align="right">Price</TableCell>
+              <TableCell align="center">Price</TableCell>
               <TableCell align="center">Size</TableCell>
               <TableCell align="center">Quantity</TableCell>
-              <TableCell align="right">Subtotal</TableCell>
+              <TableCell align="center">Subtotal</TableCell>
               <TableCell align="right"></TableCell>
             </TableRow>
           </TableHead>
@@ -35,17 +36,12 @@ export default function CartPage() {
                 <TableCell component="th" scope="row">
                   <Box display="flex" alignItems="center">
                     <img src={item.pictureUrl} alt={item.name} style={{ height: 50, marginRight: 20 }} />
-                    <div>
-                      <div>{item.name}</div>
-                      {item.sizes.map((size) => (
-                        <span key={size.value}>{size.value}</span>
-                      ))}
-                    </div>
+                      <span>{item.name}</span>
                   </Box>
                 </TableCell>
-                <TableCell align="right">₪{(item.price / 100).toFixed(2)}</TableCell>
+                <TableCell align="right">{currencyFormat(item.price)}</TableCell>
                 <TableCell align="center">
-                  {item.sizes.join(", ")}
+                  {item.size}
                 </TableCell>
                 <TableCell align="center">
                   <LoadingButton
@@ -56,7 +52,6 @@ export default function CartPage() {
                           productId: item.productId,
                           quantity: 1,
                           name: "rem",
-                          size: { value: size },
                         })
                       )
                     }
@@ -76,7 +71,7 @@ export default function CartPage() {
                   </LoadingButton>
                 </TableCell>
                 <TableCell align="right">
-                  ₪{((item.price / 100) * item.quantity).toFixed(2)}
+                  {currencyFormat(item.price * item.quantity)}
                 </TableCell>
                 <TableCell align="right">
                   <LoadingButton
@@ -87,7 +82,6 @@ export default function CartPage() {
                           productId: item.productId,
                           quantity: item.quantity,
                           name: "del",
-                          size: {value: item.sizes},
                         })
                       )
                     }

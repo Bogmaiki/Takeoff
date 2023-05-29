@@ -1,4 +1,4 @@
-import { Divider, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NotFound from "../../app/errors/NotFound";
@@ -7,7 +7,6 @@ import { LoadingButton } from "@material-ui/lab";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addCartItemAsync, removeCartItemAsync } from "../Cart/cartSlice";
 import { fetchProductAsync, productSelectors } from "./catalogSlice";
-import { Size } from '../Cart/cartSlice';
 
 export default function ProductDetails() {
   const { cart, status } = useAppSelector((state) => state.cart);
@@ -17,16 +16,6 @@ export default function ProductDetails() {
   const { status: productStatus } = useAppSelector((state) => state.catalog);
   const [quantity, setQuantity] = useState(0);
   const item = cart?.items.find((i) => i.productId === product?.id);
-  const [size, setSize] = useState<string | null>(null);
-
-  const handleSizeSelection = (
-    event: React.MouseEvent<HTMLElement>,
-    newSize: string | null
-  ) => {
-    if (newSize !== null) {
-      setSize(newSize);
-    }
-  };
 
   useEffect(() => {
     if (item) setQuantity(item.quantity);
@@ -47,7 +36,6 @@ export default function ProductDetails() {
         addCartItemAsync({
           productId: product?.id!,
           quantity: updatedQuantity,
-          size: size !== null ? size : '',
         })
       );
     } else {
@@ -56,7 +44,6 @@ export default function ProductDetails() {
         removeCartItemAsync({
           productId: product?.id!,
           quantity: updatedQuantity,
-          size
         })
       );
     }
@@ -65,8 +52,6 @@ export default function ProductDetails() {
   if (productStatus.includes("pending")) return <LoadingComponent message="Loading product..." />;
 
   if (!product) return <NotFound />;
-
-  const isAddToCartDisabled = size === null || size === "";
 
   return (
     <Grid container spacing={6}>
@@ -101,24 +86,8 @@ export default function ProductDetails() {
                 <TableCell>{product.description}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Sizes</TableCell>
-                <TableCell>
-                  <Stack direction="row" spacing={4}>
-                    <ToggleButtonGroup
-                      value={size}
-                      exclusive
-                      onChange={handleSizeSelection}
-                      aria-label="size selection"
-                    >
-                      {product.sizes &&
-                        product.sizes.map((size) => (
-                          <ToggleButton key={size.id} value={size.id}>
-                            {size.value}
-                          </ToggleButton>
-                        ))}
-                    </ToggleButtonGroup>
-                  </Stack>
-                </TableCell>
+                <TableCell>Size</TableCell>
+                <TableCell>{product.size}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -136,7 +105,7 @@ export default function ProductDetails() {
           </Grid>
           <Grid item xs={6}>
             <LoadingButton
-              disabled={isAddToCartDisabled || item?.quantity === quantity}
+              disabled={item?.quantity === quantity || quantity === 0}
               loading={status.includes("pending")}
               onClick={handleUpdateCart}
               sx={{ height: "55px" }}

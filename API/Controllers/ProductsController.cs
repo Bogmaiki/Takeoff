@@ -2,10 +2,12 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.RequestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -20,59 +22,29 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProductDto>>> GetProducts(string orderBy,
-            string searchTerm, string Collections, string Sizes)
+        public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
         {
-            var query = _context.Products.Include(p => p.Sizes)
-                .Sort(orderBy)
-                .Search(searchTerm)
-                .Filter(Collections, Sizes)
+            var query = _context.Products
+                .Sort(productParams.OrderBy)
+                .Search(productParams.SearchTerm)
+                .Filter(productParams.Collections, productParams.Sizes)
                 .AsQueryable();
 
-            var products = await query.ToListAsync();
-            var productDtos = products.Select(product => new ProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                PictureUrl = product.PictureUrl,
-                Collection = product.Collection,
-                QuantityInStock = product.QuantityInStock,
-                ReleaseDate = product.ReleaseDate,
-                Condition = product.Condition,
-                Style = product.Style,
-                Sizes = product.Sizes?.Select(s => s.Value).ToList()
-            }).ToList();
+            var products = await PagedList<Product>.toPagedList(query, productParams.PageNumber, productParams.PageSize);
 
-            return Ok(productDtos);
+            Response.AddPaginationHeader(products.MetaData);
+            
+            return products;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> GetProduct(int id)
+        public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products
-                .Include(p => p.Sizes)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Products.FindAsync(id);
 
             if (product == null) return NotFound();
 
-            var productDto = new ProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                PictureUrl = product.PictureUrl,
-                Collection = product.Collection,
-                QuantityInStock = product.QuantityInStock,
-                ReleaseDate = product.ReleaseDate,
-                Condition = product.Condition,
-                Style = product.Style,
-                Sizes = product.Sizes?.Select(s => s.Value).ToList()
-            };
-
-            return productDto;
+            return product;
         }
     }
 }

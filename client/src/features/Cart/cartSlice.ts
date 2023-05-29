@@ -2,9 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Cart } from "../../app/models/cart";
 import agent from "../../app/api/agent";
 
-export interface Size {
-    value: string;
-}
 
 interface CartState {
     cart: Cart | null;
@@ -19,7 +16,6 @@ const initialState: CartState = {
 export const addCartItemAsync = createAsyncThunk<Cart, {
     productId: number;
     quantity?: number;
-    size: string;
 }>(
     "cart/addCartItemAsync",
     async ({ productId, quantity = 1}, thunkAPI) => {
@@ -33,7 +29,7 @@ export const addCartItemAsync = createAsyncThunk<Cart, {
 
 export const removeCartItemAsync = createAsyncThunk<
     void,
-    { productId: number; quantity: number; name?: string; size: Size }
+    { productId: number; quantity: number; name?: string;}
 >("cart/reoveCartItemAsync", async ({ productId, quantity }, thunkAPI) => {
     try {
         await agent.Cart.removeItem(productId, quantity);

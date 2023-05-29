@@ -10,15 +10,10 @@ export interface CartItem {
   price: number;
   pictureUrl: string;
   quantity: number;
-  sizes: Size[];
+  size: string;
   collection: string;
   quantityInStock: number;
   releaseDate: string; 
   condition: string;
   style: string;
-}
-
-export interface Size {
-  id: number;
-  value: number;
 }

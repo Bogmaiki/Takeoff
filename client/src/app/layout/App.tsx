@@ -9,7 +9,7 @@ import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
 import { useAppDispatch } from "../store/configureStore";
 import { setCart } from "../../features/Cart/cartSlice";
-
+import { fetchCurrentUser } from "../../features/account/accountSlice";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -17,6 +17,7 @@ function App() {
 
   useEffect(() => {
     const buyerId = getCookie('buyerId');
+    dispatch(fetchCurrentUser());
     if (buyerId) {
       agent.Cart.get()
         .then(cart => dispatch(setCart(cart)))
@@ -35,7 +36,6 @@ function App() {
       mode: paletteType,
       background: {
         default: paletteType === 'light' ? '#eaeaea' : '#121212'
-        //makes the background a bit gray but only in light mode
       }
     }
   })

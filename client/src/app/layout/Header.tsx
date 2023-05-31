@@ -3,6 +3,7 @@ import { AppBar, Badge, Box, FormControlLabel, IconButton, List, ListItem, Switc
 import { Link, NavLink } from "react-router-dom";
 import logoImage from "../../Logo.png";
 import { useAppSelector } from "../store/configureStore";
+import SignedInMenu from "./SignedInMenu";
 
 const midLinks = [
     { title: 'catalog', path: '/catalog' },
@@ -78,10 +79,12 @@ interface Props {
 }
 export default function Header({ darkMode, handleThemeChange }: Props) {
     const { cart } = useAppSelector(state => state.cart);
+    const { user } = useAppSelector(state => state.account);
     const itemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0)
 
+
     return (
-        <AppBar position='static' sx={{ mb: 4 }}>
+        <AppBar position='sticky' sx={{ mb: 2 }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', allignItems: 'center' }}>
 
                 <Box display='flex' alignItems='center'>
@@ -94,7 +97,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                     <FormControlLabel
                         checked={darkMode}
                         onChange={handleThemeChange}
-                        control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />} label={undefined}                    />
+                        control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />} label={undefined} />
                 </Box>
 
                 <List sx={{ display: 'flex' }}>
@@ -116,20 +119,23 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                             <ShoppingCart />
                         </Badge>
                     </IconButton>
-                    <List sx={{ display: 'flex' }}>
-                        {rightLinks.map(({ title, path }) => (
-                            <ListItem
-                                component={NavLink}
-                                to={path}
-                                key={path}
-                                sx={navStyles}
-                            >
-                                {title.toUpperCase()}
-                            </ListItem>
-                        ))}
-                    </List>
+                    {user ? (
+                        <SignedInMenu />
+                    ) : (
+                        <List sx={{ display: 'flex' }}>
+                            {rightLinks.map(({ title, path }) => (
+                                <ListItem
+                                    component={NavLink}
+                                    to={path}
+                                    key={path}
+                                    sx={navStyles}
+                                >
+                                    {title.toUpperCase()}
+                                </ListItem>
+                            ))}
+                        </List>
+                    )}
                 </Box>
-
             </Toolbar>
         </AppBar>
     )

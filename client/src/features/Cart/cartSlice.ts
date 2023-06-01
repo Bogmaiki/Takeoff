@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { Cart } from "../../app/models/cart";
 import agent from "../../app/api/agent";
+import { getCookie } from "../../app/util/util";
 
 
 interface CartState {
@@ -12,6 +13,22 @@ const initialState: CartState = {
     cart: null,
     status: "idle",
 };
+
+export const fetchCartAsync = createAsyncThunk<Cart>(
+    'cart/fetchCartAsync',
+    async (_, thunkAPI) => {
+        try {
+            return await agent.Cart.get();
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    },
+    {
+        condition: () => {
+            if (!getCookie('buyerId')) return false;
+        }
+    }
+)
 
 export const addCartItemAsync = createAsyncThunk<Cart, {
     productId: number;
@@ -47,25 +64,16 @@ export const cartSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder
-            .addCase(addCartItemAsync.pending, (state, action) => {
+        builder.addCase(addCartItemAsync.pending, (state, action) => {
                 state.status = "pendingAddItem" + action.meta.arg.productId;
             })
-            .addCase(addCartItemAsync.fulfilled, (state, action) => {
-                state.cart = action.payload;
-                state.status = "idle";
-            })
-            .addCase(addCartItemAsync.rejected, (state, action) => {
-                state.status = "idle";
-                console.log(action.payload);
-            })
-            .addCase(removeCartItemAsync.pending, (state, action) => {
+        builder.addCase(removeCartItemAsync.pending, (state, action) => {
                 state.status =
                     "pendingRemoveItem" +
                     action.meta.arg.productId +
                     action.meta.arg.name;
             })
-            .addCase(removeCartItemAsync.fulfilled, (state, action) => {
+        builder.addCase(removeCartItemAsync.fulfilled, (state, action) => {
                 const { productId, quantity } = action.meta.arg;
                 const itemIndex = state.cart?.items.findIndex(
                     (i) => i.productId === productId
@@ -76,10 +84,18 @@ export const cartSlice = createSlice({
                     state.cart.items.splice(itemIndex, 1);
                 state.status = "idle";
             })
-            .addCase(removeCartItemAsync.rejected, (state, action) => {
+        builder.addCase(removeCartItemAsync.rejected, (state, action) => {
                 state.status = "idle";
                 console.log(action.payload);
             });
+        builder.addMatcher(isAnyOf(addCartItemAsync.fulfilled, fetchCartAsync.fulfilled),(state, action) => {
+                state.cart = action.payload;
+                state.status = "idle";
+            })
+        builder.addMatcher(isAnyOf(addCartItemAsync.rejected, fetchCartAsync.rejected), (state, action) => {
+                state.status = "idle";
+                console.log(action.payload);
+            })
     },
 });
 

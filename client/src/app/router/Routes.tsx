@@ -4,13 +4,13 @@ import Catalog from "../../features/catalog/Catalog";
 import ProductDetails from "../../features/catalog/ProductDetails";
 import AboutPage from "../../features/about/AboutPage";
 import ContactPage from "../../features/contact/ContactPage";
-import App from "../layout/App";
 import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
 import CartPage from "../../features/Cart/CartPage";
 import CheckoutPage from "../../features/checkout/CheckoutPage";
 import Login from "../../features/account/Login";
 import Register from "../../features/account/Register";
+import App from "../layout/App";
 
 export const router = createBrowserRouter([
     {

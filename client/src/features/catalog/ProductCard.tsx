@@ -9,7 +9,7 @@ interface Props {
 
 export default function ProductCard({ product }: Props) {
   return (
-    <Card sx={{ '&:hover': { transform: 'scale(1.05)' }, transition: 'transform 0.5s' }}>
+    <Card sx={{ height: '100%' , '&:hover': { transform: 'scale(1.05)' }, transition: 'transform 0.5s' }}>
       <CardActionArea component={Link} to={`/catalog/${product.id}`}>
         <CardHeader
           avatar={

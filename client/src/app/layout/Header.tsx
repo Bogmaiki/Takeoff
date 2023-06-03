@@ -1,11 +1,14 @@
 import { ShoppingCart } from "@mui/icons-material";
-import { AppBar, Badge, Box, FormControlLabel, IconButton, List, ListItem, Switch, Toolbar, Typography, styled } from "@mui/material";
+import { AppBar, Avatar, Badge, Box, Container, FormControlLabel, IconButton, Menu, MenuItem, Switch, Toolbar, Tooltip, Typography, styled } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
 import logoImage from "../../Logo.png";
 import { useAppSelector } from "../store/configureStore";
 import SignedInMenu from "./SignedInMenu";
+import { useState } from "react";
+import MenuIcon from '@mui/icons-material/Menu';
 
 const midLinks = [
+    { title: 'home', path: '/' },
     { title: 'catalog', path: '/catalog' },
     { title: 'about', path: '/about' },
     { title: 'contact', path: '/contact' },
@@ -14,17 +17,6 @@ const rightLinks = [
     { title: 'login', path: '/login' },
     { title: 'register', path: '/register' },
 ]
-const navStyles = {
-    color: 'inherit',
-    textDecoration: 'none',
-    typography: 'h6',
-    '&:hover': {
-        color: 'grey.500' //color while hovering
-    },
-    '&.active': {
-        color: 'text.secondary'
-    }
-}
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     width: 62,
@@ -81,62 +73,131 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
     const { cart } = useAppSelector(state => state.cart);
     const { user } = useAppSelector(state => state.account);
     const itemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0)
+    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
+    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElNav(event.currentTarget);
+    };
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
 
     return (
-        <AppBar position='sticky' sx={{ mb: 2 }}>
-            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', allignItems: 'center' }}>
-
-                <Box display='flex' alignItems='center'>
+        <AppBar position="static" >
+            <Container maxWidth="xl" >
+                <Toolbar disableGutters >
+                    <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="menu-appbar"
+                        aria-haspopup="true"
+                        onClick={handleOpenNavMenu}
+                        color="inherit"
+                        edge="start"
+                    >
+                        <MenuIcon />
+                    </IconButton>
                     <Typography variant="h6" component={NavLink}
                         to='/'
-                        sx={navStyles}
+                        sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
                     >
                         <img src={logoImage} alt="Takeoff Kicks" width='100' height='auto' />
                     </Typography>
+                    <Box sx={{ flexGrow: 1 }} />
                     <FormControlLabel
                         checked={darkMode}
                         onChange={handleThemeChange}
                         control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />} label={undefined} />
-                </Box>
-
-                <List sx={{ display: 'flex' }}>
-                    {midLinks.map(({ title, path }) => (
-                        <ListItem
-                            component={NavLink}
-                            to={path}
-                            key={path}
-                            sx={navStyles}
+                    <Box
+                        sx={{
+                            display: { xs: 'block', md: 'none' },
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            width: '100%',
+                            bgcolor: 'background.paper',
+                            mt: 2,
+                            zIndex: 1,
+                            boxShadow: 2,
+                        }}
+                    >
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={handleCloseNavMenu}
                         >
-                            {title.toUpperCase()}
-                        </ListItem>
-                    ))}
-                </List>
-
-                <Box display='flex' alignItems='center'>
-                    <IconButton component={Link} to='/cart' size='large' edge='start' color='inherit' sx={{ mr: 2 }}>
-                        <Badge badgeContent={itemCount} color='secondary'>
-                            <ShoppingCart />
-                        </Badge>
-                    </IconButton>
-                    {user ? (
-                        <SignedInMenu />
-                    ) : (
-                        <List sx={{ display: 'flex' }}>
-                            {rightLinks.map(({ title, path }) => (
-                                <ListItem
-                                    component={NavLink}
-                                    to={path}
-                                    key={path}
-                                    sx={navStyles}
-                                >
-                                    {title.toUpperCase()}
-                                </ListItem>
+                            {midLinks.map(({ title, path }) => (
+                                <MenuItem component={NavLink} to={path} key={path} onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center">{title.toUpperCase()}</Typography>
+                                </MenuItem>
                             ))}
-                        </List>
-                    )}
-                </Box>
-            </Toolbar>
+                            {user && user.roles?.includes('Admin') &&
+                            <MenuItem component={NavLink} to={'/inventory'} onClick={handleCloseNavMenu}>
+                                <Typography textAlign="center">INVENTORY</Typography>
+                            </MenuItem>}
+                        </Menu>
+                    </Box>
+                    <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+                        <IconButton component={Link} to='/cart' edge='start' color='inherit' sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
+                            <Badge badgeContent={itemCount} color='secondary'>
+                                <ShoppingCart />
+                            </Badge>
+                        </IconButton>
+                        {user ? (
+                            <SignedInMenu />
+                        ) : (
+                            <Box sx={{ flexGrow: 0 }}>
+                                <Tooltip title={undefined}>
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <Avatar />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseUserMenu}
+                                >
+                                    {rightLinks.map(({ title, path }) => (
+                                        <MenuItem component={NavLink} to={path} key={path} onClick={handleCloseUserMenu}>
+                                            <Typography textAlign="center">{title.toUpperCase()}</Typography>
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </Box>
+                        )}
+                    </Box>
+                </Toolbar>
+            </Container >
         </AppBar>
-    )
+    );
 }

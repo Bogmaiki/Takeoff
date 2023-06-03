@@ -1,12 +1,13 @@
-import { PersonAdd, Settings, Logout, DeliveryDining } from "@mui/icons-material";
-import { Box, Typography, Tooltip, IconButton, Avatar, Menu, MenuItem, Divider, ListItemIcon } from "@mui/material";
+import { Logout, DeliveryDining } from "@mui/icons-material";
+import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Divider, ListItemIcon } from "@mui/material";
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../store/configureStore";
+import { useAppDispatch } from "../store/configureStore";
 import { signOut } from "../../features/account/accountSlice";
+import { clearCart } from "../../features/Cart/cartSlice";
+import { Link } from "react-router-dom";
 
 export default function SignedInMenu() {
     const dispatch = useAppDispatch();
-    const {user} = useAppSelector(state => state.account);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: any) => {
@@ -28,7 +29,7 @@ export default function SignedInMenu() {
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
             >
-              <Avatar sx={{ width: 32, height: 32 }}>{user?.username?.charAt(0)}</Avatar>
+              <Avatar sx={{ width: 32, height: 32 }}></Avatar>
             </IconButton>
           </Tooltip>
         </Box>
@@ -69,11 +70,14 @@ export default function SignedInMenu() {
           <MenuItem onClick={handleClose}>
             <Avatar /> Profile
           </MenuItem>
-          <MenuItem onClick={handleClose}>
+          <MenuItem component={Link} to='/orders'>
             <DeliveryDining /> My orders
           </MenuItem>
           <Divider />
-          <MenuItem onClick={() => dispatch(signOut())}>
+          <MenuItem onClick={() => {
+            dispatch(signOut());
+            dispatch(clearCart());
+            }}>
             <ListItemIcon>
               <Logout fontSize="small" />
             </ListItemIcon>

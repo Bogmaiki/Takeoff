@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NotFound from "../../app/errors/NotFound";
 import LoadingComponent from "../../app/layout/LoadingComponent";
-import { LoadingButton } from "@material-ui/lab";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addCartItemAsync, removeCartItemAsync } from "../Cart/cartSlice";
 import { fetchProductAsync, productSelectors } from "./catalogSlice";
+import { LoadingButton } from "@mui/lab";
 
 export default function ProductDetails() {
   const { cart, status } = useAppSelector((state) => state.cart);

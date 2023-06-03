@@ -92,7 +92,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                         to='/'
                         sx={navStyles}
                     >
-                        <img src={logoImage} alt="Takeoff Kicks" width='70' height='auto' />
+                        <img src={logoImage} alt="Takeoff Kicks" width='100' height='auto' />
                     </Typography>
                     <FormControlLabel
                         checked={darkMode}

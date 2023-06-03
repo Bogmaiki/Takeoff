@@ -1,37 +1,22 @@
-import { Alert, AlertTitle, Button, ButtonGroup, Container, List, ListItem, ListItemText, Typography } from "@mui/material";
-import agent from "../../app/api/agent";
-import { useState } from "react";
+import { Box, Typography } from "@mui/material";
 
 export default function AboutPage() {
-    const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-    function getValidationError() {
-        agent.TestErrors.getValidationError()
-            .then(() => console.log('should not see this'))
-            .catch(error => setValidationErrors(error));
-    }
     return (
-        <Container>
-            <Typography gutterBottom variant='h2'>Errors for testing purposes</Typography>
-            <ButtonGroup fullWidth>
-                <Button variant='contained' onClick={() => agent.TestErrors.get400Error().catch(error => console.log(error))}>Test 400 Error</Button>
-                <Button variant='contained' onClick={() => agent.TestErrors.get401Error().catch(error => console.log(error))}>Test 401 Error</Button>
-                <Button variant='contained' onClick={() => agent.TestErrors.get404Error().catch(error => console.log(error))}>Test 404 Error</Button>
-                <Button variant='contained' onClick={() => agent.TestErrors.get500Error().catch(error => console.log(error))}>Test 500 Error</Button>
-                <Button variant='contained' onClick={getValidationError}>Test validation Error</Button>
-            </ButtonGroup>
-            {validationErrors.length > 0 && 
-            <Alert severity='error'>
-                <AlertTitle>Validation Errors</AlertTitle>
-                <List>
-                    {validationErrors.map(error => (
-                        <ListItem key={error}>
-                            <ListItemText>{error}</ListItemText>
-                        </ListItem>
-                    ))}
-                </List>
-            </Alert>
-            }
-        </Container>
+        <>
+            <Box display="flex" justifyContent="center" alignContent='center' sx={{ p: 5 }}>
+                <Typography variant='h4'>
+                    Who are Takeoff Kicks?
+                </Typography>
+            </Box>
+            <Typography variant='body1'>
+                Takeoff Kicks is an authentic reseller of aftermarket sneakers located in Ashkelon, Israel.
+                We have more than 2 years of experience in the sneaker reseller market with hundreds of deals all over the world.
+                We offer express shipping for all our Israeli customers and a pick-up option from Ashkelon.
+            </Typography>
+            <div>
+                <img src="/images/Untitled_design_22.jpg" alt="image1" style={{ display: 'block', width: '100%', maxHeight: 900, marginTop: 20 }} />
+            </div>
+        </>
     )
 }

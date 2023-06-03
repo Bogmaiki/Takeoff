@@ -2,9 +2,15 @@ import { TableContainer, Paper, Table, TableBody, TableRow, TableCell } from "@m
 import { currencyFormat } from "../../app/util/util";
 import { useAppSelector } from "../../app/store/configureStore";
 
-export default function CartSummary() {
-    const {cart} = useAppSelector(state => state.cart);
-    const subtotal = cart?.items.reduce((sum, item) => sum + (item.quantity * item.price), 0) ?? 0;
+interface Props {
+    subtotal?: number;
+}
+
+export default function CartSummary({subtotal}: Props) {
+    const { cart } = useAppSelector(state => state.cart);
+    if (subtotal === undefined) 
+        subtotal = cart?.items.reduce((sum, item) => sum + (item.quantity * item.price), 0) ?? 0;
+    const deliveryFee = subtotal > 100000 ? 0 : 3000;
 
     return (
         <>
@@ -16,7 +22,15 @@ export default function CartSummary() {
                             <TableCell align="right">{currencyFormat(subtotal)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell colSpan={2}>Tax included. Shipping calculated at checkout.</TableCell>
+                            <TableCell colSpan={2}>Delivery fee*</TableCell>
+                            <TableCell align="right">{currencyFormat(deliveryFee)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell colSpan={2}>Total</TableCell>
+                            <TableCell align="right">{currencyFormat(subtotal + deliveryFee)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell colSpan={2}>*Orders over ₪1000 qualify for free delivery</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

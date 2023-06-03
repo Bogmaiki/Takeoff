@@ -1,0 +1,16 @@
+import * as yup from 'yup';
+
+export const validationSchema = [
+    yup.object({
+        fullName: yup.string().required().label('Full name is required'),
+        address1: yup.string().required().label('Address line 1 is required'),
+        address2: yup.string().required().label('Address line 2 is required'),
+        city: yup.string().required().label('City is required'),
+        zip: yup.string().required().label('Zip code is required'),
+        phone: yup.string().required().label('Phone number is required')
+    }),
+    yup.object(),
+    yup.object({
+        nameOnCard: yup.string().required().label('Name on card is required')
+    })
+]

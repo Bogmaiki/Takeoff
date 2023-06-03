@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace API.Entities
 {
     public class Product
@@ -15,5 +13,6 @@ namespace API.Entities
         public string Condition { get; set; }
         public string Style { get; set; }
         public string Size { get; set; }
+        public string PublicId { get; set; }
     }
 }

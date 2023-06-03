@@ -14,8 +14,10 @@ namespace API.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly TokenService _tokenService;
-        public AccountController(UserManager<User> userManager, TokenService tokenService)
+        private readonly StoreContext _context;
+        public AccountController(UserManager<User> userManager, TokenService tokenService, StoreContext context)
         {
+            _context = context;
             _tokenService = tokenService;
             _userManager = userManager;
         }
@@ -26,17 +28,30 @@ namespace API.Controllers
             var user = await _userManager.FindByNameAsync(loginDto.Username);
             if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
                 return Unauthorized();
-            
-            return new UserDto{
+
+            var userCart = await RetrieveCart(loginDto.Username);
+            var anonCart = await RetrieveCart(Request.Cookies["buyerId"]);
+
+            if (anonCart != null)
+            {
+                if (userCart != null) _context.Carts.Remove(userCart);
+                anonCart.BuyerId = user.UserName;
+                Response.Cookies.Delete("buyerId");
+                await _context.SaveChangesAsync();
+            }
+
+            return new UserDto
+            {
                 Email = user.Email,
-                Token = await _tokenService.GenerateToken(user)
+                Token = await _tokenService.GenerateToken(user),
+                Cart = anonCart != null ? anonCart.MapCartToDto() : userCart?.MapCartToDto()
             };
         }
 
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
-            var user = new User{UserName = registerDto.Username, Email= registerDto.Email};
+            var user = new User { UserName = registerDto.Username, Email = registerDto.Email };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
@@ -59,11 +74,39 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            
-            return new UserDto{
+
+            var userCart = await RetrieveCart(User.Identity.Name);
+
+            return new UserDto
+            {
                 Email = user.Email,
-                Token = await _tokenService.GenerateToken(user)
+                Token = await _tokenService.GenerateToken(user),
+                Cart = userCart?.MapCartToDto()
             };
-        }       
+        }
+
+        [Authorize]
+        [HttpGet("savedAddress")]
+        public async Task<ActionResult<UserAddress>> GetSavedAddress()
+        {
+            return await _userManager.Users
+                .Where(x => x.UserName == User.Identity.Name)
+                .Select(user => user.Address)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<Cart> RetrieveCart(string buyerId)
+        {
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                Response.Cookies.Delete("buyerId");
+                return null;
+            }
+            return await _context.Carts
+                .Include(i => i.Items)
+                .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
+        }
+
     }
 }

@@ -8,14 +8,19 @@ import { signInUser } from './accountSlice';
 
 export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useAppDispatch();
     const {register, handleSubmit, formState: {isSubmitting, errors, isValid}} = useForm({
         mode: 'onTouched'
     });
 
     async function submitForm(data: FieldValues) {
-        await dispatch(signInUser(data));
-        navigate('/catalog');
+        try {
+            await dispatch(signInUser(data));
+            navigate(location.state?.from || '/catalog');
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
